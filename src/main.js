@@ -50,7 +50,7 @@ function analyzeSalesData(data, options) {
   }
   // @TODO: Проверка наличия опций
   if (typeof options !== "object" || options === null) {
-    throw new Error("Опции должны быть объектвми");
+    throw new Error("Опции должны быть объектами");
   }
   const { calculateRevenue, calculateBonus } = options;
   if (typeof calculateRevenue !== "function") {

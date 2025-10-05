@@ -132,7 +132,7 @@ sellerStats.forEach((seller, index) => {
          console.log(sellerStats);
         // seller.top_products = // Формируем топ-10 товаров
         seller.top_products = Object.entries(seller.products_sold || {})
-        .map(([sku, quantity]) => ({sku: sku,quantity: quantity}))
+        .map(([sku, quantity]) => ({"sku": sku,"quantity": quantity}))
         .sort((a, b) => b.quantity - a.quantity)
         .slice(0, 10);
 });

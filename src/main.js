@@ -87,9 +87,10 @@ function analyzeSalesData(data, options) {
     const seller = sellerIndex[record.seller_id]; // Продавец
     // Увеличить количество продаж
     seller.sales_count++;
-    seller.revenue = +record.total_amount;
+    seller.revenue+=record.total_amount;
     // Увеличить общую сумму всех продаж
-    //console.log(seller);
+    console.log(seller);
+    console.log(record);
     // Расчёт прибыли для каждого товара
     record.items.forEach((item) => {
       const product = productIndex[item.sku]; // Товар
@@ -100,12 +101,13 @@ function analyzeSalesData(data, options) {
       //       console.log(cost);
       // Посчитать выручку (revenue) с учётом скидки через функцию calculateRevenue
       const revenue = calculateRevenue(item);
-      //  console.log(revenue);
+        console.log(revenue);
       // Посчитать прибыль: выручка минус себестоимость
       const profit = revenue - cost;
       //     console.log(profit);
       // Увеличить общую накопленную прибыль (profit) у продавца
-      seller.profit = +profit;
+      seller.profit+=profit;
+      console.log(seller);
       // Учёт количества проданных товаров
       if (!seller.products_sold[item.sku]) {
         seller.products_sold[item.sku] = 0;
@@ -126,8 +128,21 @@ sellerStats.forEach((seller, index) => {
          seller.bonus = calculateBonusByProfit(index,sellerStats.length,seller);// Считаем бонус
          console.log(sellerStats);
         // seller.top_products = // Формируем топ-10 товаров
+        seller.top_products = Object.entries(seller.products_sold || {})
+        .map(([sku, quantity]) => ({sku: sku,quantity: quantity}))
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 10);
 });
-
+  console.log(sellerStats);
 
   // @TODO: Подготовка итоговой коллекции с нужными полями
+return sellerStats.map(seller => ({
+    seller_id: seller.id,                    
+    name: seller.name,                         
+    revenue: +seller.revenue.toFixed(2),     
+    profit: +seller.profit.toFixed(2),       
+    sales_count: seller.sales_count,         
+    top_products: seller.top_products,       
+    bonus: +seller.bonus.toFixed(2)          
+}));
 }

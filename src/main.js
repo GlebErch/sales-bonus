@@ -74,17 +74,14 @@ function analyzeSalesData(data, options) {
     sales_count: 0,
     products_sold: {},
   }));
-  console.log("Продавцы - ", sellerStats);
 
   // @TODO: Индексация продавцов и товаров для быстрого доступа
   const sellerIndex = Object.fromEntries(
     sellerStats.map((seller) => [seller.id, seller])
   );
-  console.log("Индекс продавцов - ", sellerIndex);
-  const productIndex = Object.fromEntries(
+   const productIndex = Object.fromEntries(
     data.products.map((product) => [product.sku, product])
   );
-  console.log("Индекс товаров - ", productIndex);
 
   // @TODO: Расчет выручки и прибыли для каждого продавца
   data.purchase_records.forEach((record) => {
@@ -94,25 +91,17 @@ function analyzeSalesData(data, options) {
     seller.sales_count++;
     seller.revenue += record.total_amount;
     // Увеличить общую сумму всех продаж
-    console.log(seller);
-    console.log(record);
-    // Расчёт прибыли для каждого товара
+     // Расчёт прибыли для каждого товара
     record.items.forEach((item) => {
       const product = productIndex[item.sku]; // Товар
       // Посчитать себестоимость (cost) товара как product.purchase_price, умноженную на количество товаров из чека
       const cost = product.purchase_price * item.quantity;
-      //    console.log(product);
-      //     console.log(item);
-      //       console.log(cost);
       // Посчитать выручку (revenue) с учётом скидки через функцию calculateRevenue
       const revenue = calculateRevenue(item);
-      console.log(revenue);
       // Посчитать прибыль: выручка минус себестоимость
       const profit = revenue - cost;
-      //     console.log(profit);
       // Увеличить общую накопленную прибыль (profit) у продавца
       seller.profit += profit;
-      console.log(seller);
       // Учёт количества проданных товаров
       if (!seller.products_sold[item.sku]) {
         seller.products_sold[item.sku] = 0;
@@ -123,22 +112,17 @@ function analyzeSalesData(data, options) {
   });
 
   // @TODO: Сортировка продавцов по прибыли
-
   sellerStats.sort((a, b) => b.profit - a.profit);
-
-  console.log(sellerStats);
 
   // @TODO: Назначение премий на основе ранжирования
   sellerStats.forEach((seller, index) => {
     seller.bonus = calculateBonusByProfit(index, sellerStats.length, seller); // Считаем бонус
-    console.log(sellerStats);
     // seller.top_products = // Формируем топ-10 товаров
     seller.top_products = Object.entries(seller.products_sold || {})
       .map(([sku, quantity]) => ({ sku: sku, quantity: quantity }))
       .sort((a, b) => b.quantity - a.quantity)
       .slice(0, 10);
   });
-  console.log(sellerStats);
 
   // @TODO: Подготовка итоговой коллекции с нужными полями
   return sellerStats.map((seller) => ({
